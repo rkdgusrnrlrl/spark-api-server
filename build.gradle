@@ -1,0 +1,17 @@
+plugins {
+    id 'java'
+}
+
+group 'me.dakbutfly'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile 'org.jmockit:jmockit:1.39'
+    testCompile 'junit:junit:4.12'
+}
