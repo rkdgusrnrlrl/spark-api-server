@@ -13,6 +13,8 @@ repositories {
 
 dependencies {
     compile 'com.sparkjava:spark-core:2.3'
+    compile 'com.fasterxml.jackson.core:jackson-core:2.5.1'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.5.1'
     testCompile 'org.jmockit:jmockit:1.39'
     testCompile 'junit:junit:4.12'
 }
