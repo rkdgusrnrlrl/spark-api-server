@@ -1,18 +1,14 @@
 package me.dakbutfly.jmockit_example;
 
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import me.dakbutfly.jmockit_example.common.CovertJsonToInstance;
+import me.dakbutfly.jmockit_example.exception.NotJsonFormatException;
+import me.dakbutfly.jmockit_example.exception.NotMatchJsonToSomeException;
 import mockit.Expectations;
 import mockit.Mocked;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import spark.Request;
-
-import java.io.IOException;
 
 import static org.junit.Assert.*;
 
@@ -22,6 +18,7 @@ public class TestJmockit {
     private Request request;
 
     private final String NAME = "강현구";
+    private final int AGE = 32;
     private final String JSON_SOME_STRING = "{\"name\":\""+NAME+"\"}";
     private final String JSON_NOT_SOME_STRING = "{\"age\": 32}";
 
@@ -29,7 +26,7 @@ public class TestJmockit {
     public ExpectedException expectedException = ExpectedException.none();
 
     @Test
-    public void 리퀘스트_바디는_JSON_STRING_값을_리턴() {
+    public void request_body는_JSON_STRING_값을_리턴() {
         new Expectations() {{
            request.body(); result = JSON_SOME_STRING;
         }};
@@ -39,80 +36,87 @@ public class TestJmockit {
     }
 
     @Test
-    public void 리퀘스트_바디가_비어있으면__NotJsonFormatException_발생() throws Exception {
+    public void request_body가_비어있으면__NotJsonFormatException_발생() throws Exception {
         expectedException.expect(NotJsonFormatException.class);
         new Expectations() {{
             request.body(); result = "";
         }};
 
         String body = request.body();
-        Some some = covertJsonStringTo(body, Some.class);
+        Some some = CovertJsonToInstance.covertJsonStringTo(body, Some.class);
 
         assertNull(some);
     }
 
     @Test
-    public void 리퀘스트_바디가_json형태가_아니면_NotJsonFormatException_발생() throws Exception {
+    public void request_body가_json형태가_아니면_NotJsonFormatException_발생() throws Exception {
         expectedException.expect(NotJsonFormatException.class);
         new Expectations() {{
             request.body(); result = "";
         }};
 
         String body = request.body();
-         covertJsonStringTo(body, Some.class);
+        CovertJsonToInstance.covertJsonStringTo(body, Some.class);
     }
 
     @Test
-    public void 리퀘스트_바디가_json이_Some과_맞지않으면_NotMatchJsonToSomeException() throws Exception {
+    public void request_body가_json이_Some과_맞지않으면_NotMatchJsonToSomeException() throws Exception {
         expectedException.expect(NotMatchJsonToSomeException.class);
         new Expectations() {{
             request.body(); result = JSON_NOT_SOME_STRING;
         }};
 
         String body = request.body();
-        covertJsonStringTo(body, Some.class);
+        CovertJsonToInstance.covertJsonStringTo(body, Some.class);
     }
 
     @Test
-    public void 리퀘스트_바디가_JSON_STRING_이면_Some_인스턴스를_리턴() throws Exception {
+    public void request_body가_JSON_STRING_이면_Some_인스턴스를_리턴() throws Exception {
         new Expectations() {{
             request.body(); result = JSON_SOME_STRING;
         }};
 
         String body = request.body();
-        Some some = covertJsonStringTo(body, Some.class);
+        Some some = CovertJsonToInstance.covertJsonStringTo(body, Some.class);
 
         assertEquals(some.name, NAME);
     }
 
-    private Some covertJsonStringTo(String body, Class<Some> someClass) throws NotJsonFormatException, NotMatchJsonToSomeException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        validJsonFormat(body, objectMapper);
-        return jsonSringTo(body, someClass, objectMapper);
+    @Test
+    public void request_body가_JSON_STRING_이면_Some2_인스턴스를_리턴() throws Exception {
+        new Expectations() {{
+            request.body(); result = JSON_NOT_SOME_STRING;
+        }};
+
+        String body = request.body();
+        Some2 some2 = CovertJsonToInstance.covertJsonStringTo(body, Some2.class);
+
+        assertEquals(some2.age, AGE);
     }
 
-    private Some jsonSringTo(String body, Class<Some> someClass, ObjectMapper objectMapper) throws NotMatchJsonToSomeException {
-        try {
-            return objectMapper.readValue(body, someClass);
-        } catch (IOException e) {
-            throw new NotMatchJsonToSomeException();
-        }
+    @Test
+    public void request_body가_내부_변수에_리스트_없는경우_이면_해당_맴버는_빈_리스트임() throws Exception {
+        new Expectations() {{
+            request.body(); result = "{ \"list\": [] }";
+        }};
+
+        String body = request.body();
+        SomeList some = CovertJsonToInstance.covertJsonStringTo(body, SomeList.class);
+
+        assertEquals(some.list.size(), 0);
     }
 
-    private void validJsonFormat(String body, ObjectMapper objectMapper) throws NotJsonFormatException {
-        try {
-            objectMapper.readTree(body);
-        } catch (IOException e) {
-            throw new NotJsonFormatException(body);
-        }
+    @Test
+    public void request_body가_Class_맴버가_없는경우_이면_NotMatchJsonToSomeException() throws Exception {
+        expectedException.expect(NotMatchJsonToSomeException.class);
+        new Expectations() {{
+            request.body(); result = "{ \"list\": [], \"age\" : 32 }";
+        }};
+
+        String body = request.body();
+        SomeList some = CovertJsonToInstance.covertJsonStringTo(body, SomeList.class);
+
+        assertEquals(some.list.size(), 0);
     }
 
-    private class NotJsonFormatException extends Exception {
-        public NotJsonFormatException(String body) {
-            super(body);
-        }
-    }
-
-    private class NotMatchJsonToSomeException extends Exception {
-    }
 }
