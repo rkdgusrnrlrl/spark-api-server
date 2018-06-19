@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'application'
 }
 
 group 'me.dakbutfly'
@@ -7,14 +8,21 @@ version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
 
+mainClassName = 'me.dakbutfly.spark_api.Application'
+
 repositories {
     mavenCentral()
 }
 
 dependencies {
+    compileOnly 'org.projectlombok:lombok:1.18.0'
+
     compile 'com.sparkjava:spark-core:2.3'
     compile 'com.fasterxml.jackson.core:jackson-core:2.5.1'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.5.1'
+
     testCompile 'org.jmockit:jmockit:1.39'
     testCompile 'junit:junit:4.12'
+    testCompile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.5'
+    testCompile group: 'org.apache.httpcomponents', name: 'fluent-hc', version: '4.5.5'
 }
