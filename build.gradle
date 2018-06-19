@@ -17,7 +17,7 @@ repositories {
 dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.0'
 
-    compile 'com.sparkjava:spark-core:2.3'
+    compile 'com.sparkjava:spark-core:2.7.2'
     compile 'com.fasterxml.jackson.core:jackson-core:2.5.1'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.5.1'
 
