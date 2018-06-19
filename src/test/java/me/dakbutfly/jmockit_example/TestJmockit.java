@@ -1,8 +1,10 @@
 package me.dakbutfly.jmockit_example;
 
-import me.dakbutfly.jmockit_example.common.CovertJsonToInstance;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import me.dakbutfly.jmockit_example.common.ConvertJsonToInstance;
 import me.dakbutfly.jmockit_example.exception.NotJsonFormatException;
 import me.dakbutfly.jmockit_example.exception.NotMatchJsonToSomeException;
+import me.dakbutfly.spark_api.User;
 import mockit.Expectations;
 import mockit.Mocked;
 import org.junit.Rule;
@@ -43,7 +45,7 @@ public class TestJmockit {
         }};
 
         String body = request.body();
-        Some some = CovertJsonToInstance.covertJsonStringTo(body, Some.class);
+        Some some = ConvertJsonToInstance.convertJsonStringTo(body, Some.class);
 
         assertNull(some);
     }
@@ -56,7 +58,7 @@ public class TestJmockit {
         }};
 
         String body = request.body();
-        CovertJsonToInstance.covertJsonStringTo(body, Some.class);
+        ConvertJsonToInstance.convertJsonStringTo(body, Some.class);
     }
 
     @Test
@@ -67,7 +69,7 @@ public class TestJmockit {
         }};
 
         String body = request.body();
-        CovertJsonToInstance.covertJsonStringTo(body, Some.class);
+        ConvertJsonToInstance.convertJsonStringTo(body, Some.class);
     }
 
     @Test
@@ -77,7 +79,7 @@ public class TestJmockit {
         }};
 
         String body = request.body();
-        Some some = CovertJsonToInstance.covertJsonStringTo(body, Some.class);
+        Some some = ConvertJsonToInstance.convertJsonStringTo(body, Some.class);
 
         assertEquals(some.name, NAME);
     }
@@ -89,7 +91,7 @@ public class TestJmockit {
         }};
 
         String body = request.body();
-        Some2 some2 = CovertJsonToInstance.covertJsonStringTo(body, Some2.class);
+        Some2 some2 = ConvertJsonToInstance.convertJsonStringTo(body, Some2.class);
 
         assertEquals(some2.age, AGE);
     }
@@ -101,7 +103,7 @@ public class TestJmockit {
         }};
 
         String body = request.body();
-        SomeList some = CovertJsonToInstance.covertJsonStringTo(body, SomeList.class);
+        SomeList some = ConvertJsonToInstance.convertJsonStringTo(body, SomeList.class);
 
         assertEquals(some.list.size(), 0);
     }
@@ -114,9 +116,22 @@ public class TestJmockit {
         }};
 
         String body = request.body();
-        SomeList some = CovertJsonToInstance.covertJsonStringTo(body, SomeList.class);
+        SomeList some = ConvertJsonToInstance.convertJsonStringTo(body, SomeList.class);
 
         assertEquals(some.list.size(), 0);
+    }
+
+    @Test
+    public void jackson_databind가_Builder_Class_여도_잘맵핑됨() throws Exception {
+        new Expectations() {{
+            request.body(); result = "{\"name\":\"강현구\",\"age\":32}";
+        }};
+
+        String body = request.body();
+        ObjectMapper objectMapper = new ObjectMapper();
+        User user = objectMapper.readValue(body, User.class);
+
+        assertEquals(user.getName(), "강현구");
     }
 
 }
