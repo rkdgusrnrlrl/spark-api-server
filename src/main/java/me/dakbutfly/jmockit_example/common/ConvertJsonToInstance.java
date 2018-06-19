@@ -6,11 +6,11 @@ import me.dakbutfly.jmockit_example.exception.NotMatchJsonToSomeException;
 
 import java.io.IOException;
 
-public class CovertJsonToInstance {
+public class ConvertJsonToInstance {
 
     private static ObjectMapper objectMapper = new ObjectMapper();
 
-    public static <T> T covertJsonStringTo(String body, Class<T> someClass) throws NotJsonFormatException, NotMatchJsonToSomeException {
+    public static <T> T convertJsonStringTo(String body, Class<T> someClass) throws NotJsonFormatException, NotMatchJsonToSomeException {
         validJsonFormat(body);
         return jsonSringTo(body, someClass);
     }
