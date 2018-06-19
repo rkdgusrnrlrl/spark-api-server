@@ -28,7 +28,7 @@ public class TestUserApi {
                                 .execute()
                                 .returnContent();
         String body = content.asString();
-        assertEquals(body, "{\"data\":{\"users\":[]}}");
+        assertEquals(body, "{\"data\":{\"userList\":[]}}");
 
     }
 

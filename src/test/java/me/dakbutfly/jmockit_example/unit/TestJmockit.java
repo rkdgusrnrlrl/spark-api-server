@@ -1,6 +1,9 @@
-package me.dakbutfly.jmockit_example;
+package me.dakbutfly.jmockit_example.unit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import me.dakbutfly.jmockit_example.Some;
+import me.dakbutfly.jmockit_example.Some2;
+import me.dakbutfly.jmockit_example.SomeList;
 import me.dakbutfly.jmockit_example.common.ConvertJsonToInstance;
 import me.dakbutfly.jmockit_example.exception.NotJsonFormatException;
 import me.dakbutfly.jmockit_example.exception.NotMatchJsonToSomeException;

@@ -19,7 +19,7 @@ public class Application {
             ObjectMapper objectMapper = new ObjectMapper();
             String json = objectMapper.writeValueAsString(userList);
 
-            return "{\"data\":{\"users\":"+json+"}}";
+            return "{\"data\":{\"userList\":"+json+"}}";
         });
 
         post("/users", (req, res) -> {

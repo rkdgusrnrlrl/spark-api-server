@@ -48,7 +48,7 @@ public class TestUserApiBeforeSetUser {
                                 .execute()
                                 .returnContent();
         String body = content.asString();
-        assertEquals(body, "{\"data\":{\"users\":["+getUserJsonString()+"]}}");
+        assertEquals(body, "{\"data\":{\"userList\":["+getUserJsonString()+"]}}");
 
     }
 
