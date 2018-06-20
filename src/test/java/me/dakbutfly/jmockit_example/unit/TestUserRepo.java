@@ -1,41 +1,16 @@
 package me.dakbutfly.jmockit_example.unit;
 
 import me.dakbutfly.spark_api.User;
+import me.dakbutfly.spark_api.repository.UserRepoImplByList;
 import me.dakbutfly.spark_api.repository.UserRepository;
-import mockit.Expectations;
-import mockit.Mocked;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestUserRepo {
-
-    class UserRepoImplByList implements UserRepository {
-        private List<User> userListInRepo = new ArrayList<>();
-        private long userId = 0L;
-
-
-        @Override
-        public List<User> findAll() {
-            return userListInRepo;
-        }
-
-        @Override
-        public void clear() {
-            userListInRepo.clear();
-        }
-
-        @Override
-        public User save(User user) {
-            user.setId(++userId);
-            return user;
-        }
-    };
 
     private UserRepository userRepository = new UserRepoImplByList();
 
@@ -71,6 +46,31 @@ public class TestUserRepo {
 
         // then
         assertNotEquals(newUser1.getId(), newUser2.getId());
+    }
+
+    @Test
+    public void 없는_사용자ID로_특정사용자를_가져온다면_null임() {
+
+        // when
+        User newUser1 = userRepository.findUserById(1L);
+
+        // then
+        assertNull(newUser1);
+    }
+
+    @Test
+    public void 사용자ID로_특정사용자를_가져올수_있음() {
+        // given
+        User user = User.builder().name("강현구").age(32).build();
+        userRepository.save(user);
+
+        // when
+        User newUser1 = userRepository.findUserById(1L);
+
+        // then
+        assertEquals(newUser1.getId(), 1L);
+        assertEquals(newUser1.getName(), "강현구");
+        assertEquals(newUser1.getAge(), 32);
     }
 
     @AfterEach
