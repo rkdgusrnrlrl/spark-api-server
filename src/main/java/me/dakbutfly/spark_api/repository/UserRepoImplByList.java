@@ -17,6 +17,7 @@ public class UserRepoImplByList implements UserRepository {
 
     @Override
     public void clear() {
+        userId = 0L;
         userListInRepo.clear();
     }
 
