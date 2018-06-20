@@ -22,7 +22,9 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-databind:2.5.1'
 
     testCompile 'org.jmockit:jmockit:1.39'
-    testCompile 'junit:junit:4.12'
+    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.2.0'
+    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.2.0'
+
     testCompile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.5'
     testCompile group: 'org.apache.httpcomponents', name: 'fluent-hc', version: '4.5.5'
 }

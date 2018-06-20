@@ -1,35 +1,30 @@
 package me.dakbutfly.jmockit_example.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import me.dakbutfly.spark_api.User;
 
 import me.dakbutfly.spark_api.Application;
-import org.apache.http.client.fluent.Content;
-import org.apache.http.client.fluent.Request;
-import org.apache.http.entity.ContentType;
-import org.junit.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
+import static me.dakbutfly.jmockit_example.common.ConvertJsonToInstance.toJson;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static spark.Spark.stop;
 
 public class TestUserApi {
 
-    @BeforeClass
+    @BeforeAll
     public static void 서버_실행() {
         Application.main(null);
     }
 
     @Test
     public void 성공시_사용자정보를_출력() throws IOException {
+        String body = ApiCall.findUsersApiCall();
 
-        Content content = Request.Get("http://localhost:4567/users")
-                                .execute()
-                                .returnContent();
-        String body = content.asString();
         assertEquals(body, "{\"data\":{\"userList\":[]}}");
-
     }
 
     @Test
@@ -38,18 +33,16 @@ public class TestUserApi {
                 .name("강현구")
                 .age(32)
                 .build();
-        ObjectMapper objectMapper = new ObjectMapper();
-        String json = objectMapper.writeValueAsString(user);
+        String json = toJson(user);
 
-        Content content = Request.Post("http://localhost:4567/users")
-                .bodyString(json, ContentType.APPLICATION_JSON)
-                .execute()
-                .returnContent();
-        String body = content.asString();
-        assertEquals(body, "{\"data\":{\"user\":"+json+"}}");
+        String body = ApiCall.registerUserApiCall(json);
+
+        user.setId(1);
+        String userStirng = toJson(user);
+        assertEquals(body, "{\"data\":{\"user\":"+userStirng+"}}");
     }
 
-    @AfterClass
+    @AfterAll
     public static void 서버_종료() {
         stop();
     }

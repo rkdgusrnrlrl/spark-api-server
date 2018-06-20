@@ -1,63 +1,56 @@
 package me.dakbutfly.jmockit_example.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import me.dakbutfly.spark_api.Application;
 import me.dakbutfly.spark_api.User;
-import org.apache.http.client.fluent.Content;
-import org.apache.http.client.fluent.Request;
-import org.apache.http.entity.ContentType;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
+import static me.dakbutfly.jmockit_example.common.ConvertJsonToInstance.toJson;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static spark.Spark.stop;
 
 public class TestUserApiBeforeSetUser {
 
-    @BeforeClass
+    @BeforeAll
     public static void 서버_실행() {
         Application.main(null);
     }
 
-    @Before
+    @BeforeEach
     public void 사용자등록() throws IOException {
-        String json = getUserJsonString();
+        User user = getUserInstance();
+        String json = toJson(user);
 
-        Content content = Request.Post("http://localhost:4567/users")
-                .bodyString(json, ContentType.APPLICATION_JSON)
-                .execute()
-                .returnContent();
-        String body = content.asString();
-        assertEquals(body, "{\"data\":{\"user\":"+json+"}}");
-    }
+        String body = ApiCall.registerUserApiCall(json);
 
-    private static String getUserJsonString() throws JsonProcessingException {
-        User user = User.builder()
-                .name("강현구")
-                .age(32)
-                .build();
-        ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.writeValueAsString(user);
+        user.setId(1L);
+        String userJson = toJson(user);
+        assertEquals(body, "{\"data\":{\"user\":"+userJson+"}}");
     }
 
     @Test
     public void 사용자_한명이_등록되_있어야함() throws IOException {
+        String body = ApiCall.findUsersApiCall();
 
-        Content content = Request.Get("http://localhost:4567/users")
-                                .execute()
-                                .returnContent();
-        String body = content.asString();
-        assertEquals(body, "{\"data\":{\"userList\":["+getUserJsonString()+"]}}");
+        User user = getUserInstance();
+        assertEquals(body, "{\"data\":{\"userList\":["+ toJson(user) +"]}}");
 
     }
 
-    @AfterClass
+    @AfterAll
     public static void 서버_종료() {
         stop();
+    }
+
+
+    private User getUserInstance() {
+        return User.builder()
+                .name("강현구")
+                .age(32)
+                .build();
     }
 }

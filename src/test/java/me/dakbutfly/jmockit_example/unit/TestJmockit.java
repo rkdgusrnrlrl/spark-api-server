@@ -1,6 +1,7 @@
 package me.dakbutfly.jmockit_example.unit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import me.dakbutfly.jmockit_example.Some;
 import me.dakbutfly.jmockit_example.Some2;
 import me.dakbutfly.jmockit_example.SomeList;
@@ -10,12 +11,12 @@ import me.dakbutfly.jmockit_example.exception.NotMatchJsonToSomeException;
 import me.dakbutfly.spark_api.User;
 import mockit.Expectations;
 import mockit.Mocked;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 import spark.Request;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TestJmockit {
 
@@ -27,8 +28,6 @@ public class TestJmockit {
     private final String JSON_SOME_STRING = "{\"name\":\""+NAME+"\"}";
     private final String JSON_NOT_SOME_STRING = "{\"age\": 32}";
 
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
 
     @Test
     public void request_body는_JSON_STRING_값을_리턴() {
@@ -42,37 +41,38 @@ public class TestJmockit {
 
     @Test
     public void request_body가_비어있으면__NotJsonFormatException_발생() throws Exception {
-        expectedException.expect(NotJsonFormatException.class);
-        new Expectations() {{
-            request.body(); result = "";
-        }};
+        assertThrows(NotJsonFormatException.class, () -> {
+            new Expectations() {{
+                request.body(); result = "";
+            }};
 
-        String body = request.body();
-        Some some = ConvertJsonToInstance.convertJsonStringTo(body, Some.class);
-
-        assertNull(some);
+            String body = request.body();
+            Some some = ConvertJsonToInstance.convertJsonStringTo(body, Some.class);
+        });
     }
 
     @Test
     public void request_body가_json형태가_아니면_NotJsonFormatException_발생() throws Exception {
-        expectedException.expect(NotJsonFormatException.class);
-        new Expectations() {{
-            request.body(); result = "";
-        }};
+        assertThrows(NotJsonFormatException.class, () -> {
+            new Expectations() {{
+                request.body(); result = "";
+            }};
 
-        String body = request.body();
-        ConvertJsonToInstance.convertJsonStringTo(body, Some.class);
+            String body = request.body();
+            ConvertJsonToInstance.convertJsonStringTo(body, Some.class);
+        });
     }
 
     @Test
     public void request_body가_json이_Some과_맞지않으면_NotMatchJsonToSomeException() throws Exception {
-        expectedException.expect(NotMatchJsonToSomeException.class);
-        new Expectations() {{
-            request.body(); result = JSON_NOT_SOME_STRING;
-        }};
+        assertThrows(NotMatchJsonToSomeException.class, () -> {
+            new Expectations() {{
+                request.body(); result = JSON_NOT_SOME_STRING;
+            }};
 
-        String body = request.body();
-        ConvertJsonToInstance.convertJsonStringTo(body, Some.class);
+            String body = request.body();
+            ConvertJsonToInstance.convertJsonStringTo(body, Some.class);
+        });
     }
 
     @Test
@@ -113,15 +113,16 @@ public class TestJmockit {
 
     @Test
     public void request_body가_Class_맴버가_없는경우_이면_NotMatchJsonToSomeException() throws Exception {
-        expectedException.expect(NotMatchJsonToSomeException.class);
-        new Expectations() {{
-            request.body(); result = "{ \"list\": [], \"age\" : 32 }";
-        }};
+        assertThrows(NotMatchJsonToSomeException.class, () -> {
+            new Expectations() {{
+                request.body(); result = "{ \"list\": [], \"age\" : 32 }";
+            }};
 
-        String body = request.body();
-        SomeList some = ConvertJsonToInstance.convertJsonStringTo(body, SomeList.class);
+            String body = request.body();
+            SomeList some = ConvertJsonToInstance.convertJsonStringTo(body, SomeList.class);
 
-        assertEquals(some.list.size(), 0);
+            assertEquals(some.list.size(), 0);
+        });
     }
 
     @Test
@@ -137,4 +138,27 @@ public class TestJmockit {
         assertEquals(user.getName(), "강현구");
     }
 
+    @Test
+    public void json_필드가_부족해도_인스턴스_생성되나_int는_0으로_초기화됨() throws Exception {
+        String userString1 = "{\"name\":\"강현구\"}";
+        String userString2 = "{\"age\":25}";
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        // when
+        User user = objectMapper.readValue(userString1, User.class);
+        User user2 = objectMapper.readValue(userString2, User.class);
+
+        // then
+        assertEquals(user.getAge(), 0);
+        assertNull(user2.getName());
+    }
+
+    @Test
+    public void json_필드가_더_있다면_UnrecognizedPropertyException_발생() throws Exception {
+        assertThrows(UnrecognizedPropertyException.class, () -> {
+            String userString2 = "{\"name\":\"강현구\",\"age\":25}";
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.readValue(userString2, Some.class);
+        });
+    }
 }
