@@ -8,6 +8,7 @@ import org.apache.http.client.fluent.Content;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.entity.ContentType;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -19,9 +20,12 @@ import static spark.Spark.stop;
 public class TestUserApiBeforeSetUser {
 
     @BeforeClass
-    public static void 서버_실행() throws IOException {
-
+    public static void 서버_실행() {
         Application.main(null);
+    }
+
+    @Before
+    public void 사용자등록() throws IOException {
         String json = getUserJsonString();
 
         Content content = Request.Post("http://localhost:4567/users")

@@ -1,5 +1,6 @@
 package me.dakbutfly.jmockit_example.common;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.dakbutfly.jmockit_example.exception.NotJsonFormatException;
 import me.dakbutfly.jmockit_example.exception.NotMatchJsonToSomeException;
@@ -13,6 +14,10 @@ public class ConvertJsonToInstance {
     public static <T> T convertJsonStringTo(String body, Class<T> someClass) throws NotJsonFormatException, NotMatchJsonToSomeException {
         validJsonFormat(body);
         return jsonSringTo(body, someClass);
+    }
+
+    public static String toJson(Object obj) throws JsonProcessingException {
+        return objectMapper.writeValueAsString(obj);
     }
 
     private static <T> T jsonSringTo(String body, Class<T> someClass) throws NotMatchJsonToSomeException {
