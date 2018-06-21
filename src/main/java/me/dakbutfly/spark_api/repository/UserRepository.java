@@ -9,4 +9,5 @@ public interface UserRepository {
     void clear();
     User save(User user);
     User findUserById(long id);
+    boolean existById(long l);
 }

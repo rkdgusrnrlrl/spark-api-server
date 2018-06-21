@@ -20,4 +20,11 @@ public class ApiCall {
                 .returnContent()
                 .asString();
     }
+
+    public static String deleteUser(String userId) throws IOException {
+        return Request.Delete("http://localhost:4567/users/" + userId)
+                .execute()
+                .returnContent()
+                .asString();
+    }
 }

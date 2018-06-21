@@ -75,6 +75,21 @@ class TestUserRepo {
         assertEquals(newUser1.getAge(), 32);
     }
 
+    @Test
+    void 사용자_ID로_사용자_유무를_체크할_수_있음() {
+        // given
+        User user = User.builder().name("강현구").age(32).build();
+        userRepository.save(user);
+
+        // when
+        boolean isExistUserHaveId1 = userRepository.existById(1L);
+        boolean isExistUserHaveId2 = userRepository.existById(2L);
+
+        // then
+        assertTrue(isExistUserHaveId1);
+        assertFalse(isExistUserHaveId2);
+    }
+
     @AfterEach
     void 레파지토리_초기화() {
         userRepository.clear();

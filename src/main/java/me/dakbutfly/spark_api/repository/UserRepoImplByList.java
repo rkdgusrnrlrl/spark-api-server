@@ -32,4 +32,9 @@ public class UserRepoImplByList implements UserRepository {
     public User findUserById(long id) {
         return userListInRepo.stream().filter(user -> user.getId() == id).findFirst().orElse(null);
     }
+
+    @Override
+    public boolean existById(long id) {
+        return findUserById(id) != null;
+    }
 }

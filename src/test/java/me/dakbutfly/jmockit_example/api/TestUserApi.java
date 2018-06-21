@@ -80,6 +80,35 @@ class TestUserApi {
             assertNotEquals(user1.getId(), user2.getId());
         }
 
+        @Test
+        void 사용자_삭제시_정상응답을_받음() throws IOException, NotMatchJsonToSomeException, NotJsonFormatException {
+            // given
+
+            // when
+            String userId = "1";
+            String body = ApiCall.deleteUser(userId);
+
+            // then
+            ResponseBody responseBody = convertJsonStringTo(body, ResponseBody.class);
+            assertEquals(responseBody.getCodeno(), 2000L);
+            assertEquals(responseBody.getCode(), "SUCCESS");
+        }
+
+        @Test
+        void 사용자_삭제시_없는_사용자_ID로_호출시_에러_발생() throws IOException, NotMatchJsonToSomeException, NotJsonFormatException {
+            // given
+
+            // when
+            String userId = "2";
+            String body = ApiCall.deleteUser(userId);
+
+            // then
+            ResponseBody responseBody = convertJsonStringTo(body, ResponseBody.class);
+            assertEquals(responseBody.getCodeno(), 5000L);
+            assertEquals(responseBody.getCode(), "ERROR");
+
+        }
+
         @AfterEach
         void 레포지토리_클리어() {
             Application.repositorysClear();

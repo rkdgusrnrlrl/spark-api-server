@@ -6,10 +6,8 @@ import me.dakbutfly.spark_api.repository.UserRepository;
 
 import java.util.ArrayList;
 
-import static spark.Spark.get;
-import static spark.Spark.init;
-import static spark.Spark.post;
 import static me.dakbutfly.jmockit_example.common.ConvertJsonToInstance.*;
+import static spark.Spark.*;
 
 public class Application {
     private static UserRepository userRepository = new UserRepoImplByList();
@@ -27,6 +25,14 @@ public class Application {
             userRepository.save(user);
 
             return "{\"data\":{\"user\":"+ toJson(user) +"}}";
+        });
+
+        delete("/users/:id", (req, res) -> {
+            long userId = Long.parseLong(req.params("id"));
+            if (!userRepository.existById(userId) )
+                return toJson(ResponseBody.builder().codeno(5000L).code("ERROR").build());
+
+            return toJson(ResponseBody.builder().codeno(2000L).code("SUCCESS").build());
         });
     }
 }
