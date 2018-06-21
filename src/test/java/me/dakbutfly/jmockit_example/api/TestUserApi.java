@@ -3,6 +3,9 @@ package me.dakbutfly.jmockit_example.api;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.dakbutfly.jmockit_example.data.UserListData;
+import me.dakbutfly.jmockit_example.exception.NotJsonFormatException;
+import me.dakbutfly.jmockit_example.exception.NotMatchJsonToSomeException;
+import me.dakbutfly.spark_api.ResponseBody;
 import me.dakbutfly.spark_api.User;
 
 import me.dakbutfly.spark_api.Application;
@@ -11,6 +14,7 @@ import org.junit.jupiter.api.*;
 import java.io.IOException;
 import java.util.List;
 
+import static me.dakbutfly.jmockit_example.common.ConvertJsonToInstance.convertJsonStringTo;
 import static me.dakbutfly.jmockit_example.common.ConvertJsonToInstance.toJson;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -26,7 +30,7 @@ class TestUserApi {
 
     @Test
     void 성공시_사용자정보를_출력() throws IOException {
-        String body = ApiCall.findUsersApiCall();
+        String body = ApiCall.findUsers();
 
         assertEquals(body, "{\"data\":{\"userList\":[]}}");
     }
@@ -40,7 +44,7 @@ class TestUserApi {
             User user = getUserInstance();
             String json = toJson(user);
 
-            String body = ApiCall.registerUserApiCall(json);
+            String body = ApiCall.registerUser(json);
 
             user.setId(1L);
             String userJson = toJson(user);
@@ -49,7 +53,7 @@ class TestUserApi {
 
         @Test
         void 사용자_한명이_등록되_있어야함() throws IOException {
-            String body = ApiCall.findUsersApiCall();
+            String body = ApiCall.findUsers();
 
             User user = User.builder().id(1L).name("강현구").age(32).build();
 
@@ -62,10 +66,10 @@ class TestUserApi {
             // given
             User user = User.builder().name("강현구2").age(32).build();
             String json = toJson(user);
-            ApiCall.registerUserApiCall(json);
+            ApiCall.registerUser(json);
 
             // when
-            String body = ApiCall.findUsersApiCall();
+            String body = ApiCall.findUsers();
 
             // then
             UserListData userListData = covertData(body);
