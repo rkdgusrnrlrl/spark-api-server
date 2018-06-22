@@ -29,7 +29,8 @@ public class Application {
 
         delete("/users/:id", (req, res) -> {
             long userId = Long.parseLong(req.params("id"));
-            if (!userRepository.existById(userId) )
+            boolean isDeleted = userRepository.deleteById(userId);
+            if (!isDeleted)
                 return toJson(ResponseBody.builder().codeno(5000L).code("ERROR").build());
 
             return toJson(ResponseBody.builder().codeno(2000L).code("SUCCESS").build());

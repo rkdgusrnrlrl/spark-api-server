@@ -90,6 +90,47 @@ class TestUserRepo {
         assertFalse(isExistUserHaveId2);
     }
 
+    @Test
+    void 없는_사용자_ID로_삭제_요청시_false_리턴() {
+        // given
+        User user = User.builder().name("강현구").age(32).build();
+        userRepository.save(user);
+
+        // when
+        boolean isDeleted = userRepository.deleteById(2L);
+
+        // then
+        assertFalse(isDeleted);
+    }
+
+    @Test
+    void 있는_사용자_ID로_삭제_요청시_true_리턴() {
+        // given
+        User user = User.builder().name("강현구").age(32).build();
+        userRepository.save(user);
+
+        // when
+        boolean isDeleted = userRepository.deleteById(1L);
+
+        // then
+        assertTrue(isDeleted);
+    }
+
+    @Test
+    void 있는_사용자_ID로_삭제_요청시_해당_사용자를_목록에서_없음() {
+        // given
+        User user = User.builder().name("강현구").age(32).build();
+        userRepository.save(user);
+
+        // when
+        userRepository.deleteById(1L);
+        List<User> userList = userRepository.findAll();
+
+        // then
+        User userFound = userList.stream().filter((user1 -> user.getId() == 1L)).findAny().orElse(null);
+        assertNull(userFound);
+    }
+
     @AfterEach
     void 레파지토리_초기화() {
         userRepository.clear();

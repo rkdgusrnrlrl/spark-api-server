@@ -109,6 +109,21 @@ class TestUserApi {
 
         }
 
+        @Test
+        void 사용자_삭제후_사용자_목록_호출시_사용자가_없음() throws IOException, NotMatchJsonToSomeException, NotJsonFormatException {
+            // given
+            String userId = "1";
+            ApiCall.deleteUser(userId);
+
+            // when
+            String body = ApiCall.findUsers();
+
+            // then
+            UserListData userListData = covertData(body);
+            List<User> userList = userListData.userList;
+            assertEquals(userList.size(), 0);
+        }
+
         @AfterEach
         void 레포지토리_클리어() {
             Application.repositorysClear();

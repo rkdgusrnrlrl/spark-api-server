@@ -4,6 +4,7 @@ import me.dakbutfly.spark_api.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class UserRepoImplByList implements UserRepository {
     private List<User> userListInRepo = new ArrayList<User>();
@@ -36,5 +37,15 @@ public class UserRepoImplByList implements UserRepository {
     @Override
     public boolean existById(long id) {
         return findUserById(id) != null;
+    }
+
+    @Override
+    public boolean deleteById(long id) {
+        if (!existById(id)) return false;
+
+        userListInRepo = userListInRepo.stream()
+                .filter(user -> user.getId() != id)
+                .collect(Collectors.toList());
+        return true;
     }
 }

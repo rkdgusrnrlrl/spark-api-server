@@ -10,4 +10,5 @@ public interface UserRepository {
     User save(User user);
     User findUserById(long id);
     boolean existById(long l);
+    boolean deleteById(long id);
 }
